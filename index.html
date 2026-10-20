@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IrisAI | Flower Classification</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5142c7;
+            --text: #20233a;
+            --muted: #777c96;
+            --border: #e8e9f2;
+            --surface: #ffffff;
+            --background: #f6f7fc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "DM Sans", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at 10% 0%, #e8e4ff 0%, transparent 35%),
+                radial-gradient(ellipse at 100% 100%, #dff6f0 0%, transparent 30%),
+                var(--background);
+            min-height: 100vh;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(225, 226, 239, 0.8);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(14px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: "Manrope", sans-serif;
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -0.7px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            color: white;
+            background: linear-gradient(135deg, #8878ff, #5945d6);
+            box-shadow: 0 7px 18px rgba(108, 92, 231, 0.24);
+            font-size: 22px;
+        }
+
+        .nav-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .nav-label span {
+            color: #21865b;
+            margin-right: 7px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 65px 20px 38px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border: 1px solid #ded9ff;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--primary-dark);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #6c5ce7;
+        }
+
+        h1 {
+            margin: 22px 0 15px;
+            font-family: "Manrope", sans-serif;
+            font-size: clamp(34px, 5vw, 53px);
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        h1 .highlight {
+            color: var(--primary);
+        }
+
+        .hero p {
+            max-width: 570px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .main-layout {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px 55px;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            border: 1px solid rgba(230, 231, 241, 0.95);
+            border-radius: 22px;
+            background: var(--surface);
+            box-shadow: 0 15px 50px rgba(39, 42, 82, 0.055);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 27px 30px 22px;
+            border-bottom: 1px solid #f0f0f6;
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .section-icon {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+            background: #f0edff;
+            color: var(--primary);
+            font-size: 21px;
+        }
+
+        h2 {
+            font-family: "Manrope", sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+        }
+
+        .section-subtitle {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .form-body {
+            padding: 25px 30px 30px;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px 18px;
+        }
+
+        .field label {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+            margin-bottom: 10px;
+            color: #41445d;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .unit {
+            color: #999db2;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            height: 51px;
+            padding: 0 14px;
+            outline: none;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: #fafaff;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 600;
+            transition: border-color 0.2s, box-shadow 0.2s,
+                        background 0.2s;
+        }
+
+        .input-wrap input:hover {
+            border-color: #c9c3ff;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        .input-hint {
+            margin-top: 8px;
+            color: #9a9db0;
+            font-size: 11px;
+        }
+
+        .predict-btn {
+            width: 100%;
+            margin-top: 28px;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(110deg, #7665ef, #5945d6);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.23);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(108, 92, 231, 0.32);
+        }
+
+        .predict-btn:active {
+            transform: translateY(0);
+        }
+
+        .privacy-note {
+            margin-top: 14px;
+            text-align: center;
+            color: #999db0;
+            font-size: 11px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .result-card {
+            min-height: 295px;
+        }
+
+        .result-content {
+            padding: 27px 27px 30px;
+            text-align: center;
+        }
+
+        .flower-art {
+            display: grid;
+            place-items: center;
+            width: 94px;
+            height: 94px;
+            margin: 5px auto 19px;
+            border-radius: 27px;
+            background: linear-gradient(135deg, #eeeaff, #e1f5ee);
+            font-size: 46px;
+        }
+
+        .result-label {
+            margin-bottom: 9px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+        }
+
+        .result-content h3 {
+            font-family: "Manrope", sans-serif;
+            font-size: 24px;
+            line-height: 1.4;
+            letter-spacing: -0.7px;
+            overflow-wrap: anywhere;
+        }
+
+        .result-description {
+            max-width: 290px;
+            margin: 10px auto 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .empty-result {
+            padding-top: 12px;
+        }
+
+        .empty-result h3 {
+            font-size: 19px;
+        }
+
+        .result-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #e5f8ef;
+            color: #1c8257;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .error-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #fff0f0;
+            color: #b42318;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .info-card {
+            padding: 23px 25px;
+        }
+
+        .info-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 19px;
+            font-family: "Manrope", sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .info-heading span {
+            color: var(--primary);
+            font-size: 19px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .step-number {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 29px;
+            height: 29px;
+            border-radius: 9px;
+            background: #f0edff;
+            color: var(--primary-dark);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .step strong {
+            display: block;
+            margin: 1px 0 4px;
+            font-size: 12px;
+        }
+
+        .step p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            padding: 22px;
+            border-top: 1px solid rgba(225, 226, 239, 0.8);
+            text-align: center;
+            color: #9296aa;
+            font-size: 12px;
+        }
+
+        .footer strong {
+            color: #626780;
+        }
+
+        @media (max-width: 760px) {
+            .navbar {
+                padding: 16px 22px;
+            }
+
+            .nav-label {
+                font-size: 11px;
+            }
+
+            .hero {
+                padding: 45px 20px 30px;
+            }
+
+            .main-layout {
+                max-width: 540px;
+                grid-template-columns: 1fr;
+                padding: 0 17px 40px;
+                gap: 20px;
+            }
+
+            .card-header {
+                padding: 23px 22px 19px;
+            }
+
+            .form-body {
+                padding: 23px 22px;
+            }
+
+            .info-card {
+                padding: 22px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .brand {
+                font-size: 18px;
+            }
+
+            .brand-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .field-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            h1 {
+                letter-spacing: -1.2px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <div class="brand-icon">✿</div>
+            <span>IrisAI</span>
+        </div>
+        <div class="nav-label">
+            <span>●</span> ML Classification System
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                Powered by manual KNN
+            </div>
+
+            <h1>Discover your flower's<br>
+                <span class="highlight">identity.</span>
+            </h1>
+
+            <p>
+                Enter four simple measurements and let our
+                K-Nearest Neighbors algorithm identify the
+                Iris species in seconds.
+            </p>
+        </section>
+
+        <section class="main-layout">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-row">
+                        <div class="section-icon">⌁</div>
+                        <div>
+                            <h2>Flower Measurements</h2>
+                            <p class="section-subtitle">
+                                Enter the dimensions in centimeters
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-body">
+                    <form method="POST">
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="sepal_length">
+                                    Sepal Length
+                                    <span class="unit">CM</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <input
+                                        id="sepal_length"
+                                        name="sepal_length"
+                                        type="number"
+                                        min="0.01"
+                                        max="10"
+                                        step="any"
+                                        placeholder="e.g. 5.1"
+                                        value="{{ request.form.get('sepal_length', '5.1') }}"
+                                        required>
+                                </div>
+                                <p class="input-hint">Length of the outer leaf</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="sepal_width">
+                                    Sepal Width
+                                    <span class="unit">CM</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <input
+                                        id="sepal_width"
+                                        name="sepal_width"
+                                        type="number"
+                                        min="0.01"
+                                        max="10"
+                                        step="any"
+                                        placeholder="e.g. 3.5"
+                                        value="{{ request.form.get('sepal_width', '3.5') }}"
+                                        required>
+                                </div>
+                                <p class="input-hint">Width of the outer leaf</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="petal_length">
+                                    Petal Length
+                                    <span class="unit">CM</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <input
+                                        id="petal_length"
+                                        name="petal_length"
+                                        type="number"
+                                        min="0.01"
+                                        max="10"
+                                        step="any"
+                                        placeholder="e.g. 1.4"
+                                        value="{{ request.form.get('petal_length', '1.4') }}"
+                                        required>
+                                </div>
+                                <p class="input-hint">Length of the flower petal</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="petal_width">
+                                    Petal Width
+                                    <span class="unit">CM</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <input
+                                        id="petal_width"
+                                        name="petal_width"
+                                        type="number"
+                                        min="0.01"
+                                        max="10"
+                                        step="any"
+                                        placeholder="e.g. 0.2"
+                                        value="{{ request.form.get('petal_width', '0.2') }}"
+                                        required>
+                                </div>
+                                <p class="input-hint">Width of the flower petal</p>
+                            </div>
+                        </div>
+
+                        <button class="predict-btn" type="submit">
+                            <span>✧</span>
+                            Predict Flower Species
+                            <span>→</span>
+                        </button>
+
+                        <p class="privacy-note">
+                            Your measurements are processed by the prediction app.
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <aside class="right-column">
+                <div class="card result-card">
+                    <div class="card-header">
+                        <div class="card-title-row">
+                            <div class="section-icon">✿</div>
+                            <div>
+                                <h2>Prediction Result</h2>
+                                <p class="section-subtitle">
+                                    Your classification appears here
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-content">
+                        {% if prediction %}
+                            <div class="flower-art">🌸</div>
+                            <p class="result-label">Identified species</p>
+                            <h3>{{ prediction }}</h3>
+                            <p class="result-description">
+                                The manual KNN algorithm selected this
+                                species using the nearest flowers in
+                                the dataset.
+                            </p>
+                            <div class="result-badge">
+                                ✓ Prediction complete
+                            </div>
+                        {% else %}
+                            <div class="flower-art">🌷</div>
+                            <div class="empty-result">
+                                <h3>Ready to identify</h3>
+                                <p class="result-description">
+                                    Fill in the four measurements and
+                                    click the prediction button to
+                                    discover the species.
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        {% if error %}
+                            <div class="error-message" role="alert">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card info-card">
+                    <div class="info-heading">
+                        <span>✦</span>
+                        How it works
+                    </div>
+
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">01</div>
+                            <div>
+                                <strong>Enter measurements</strong>
+                                <p>Provide the sepal and petal dimensions.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">02</div>
+                            <div>
+                                <strong>Calculate distances</strong>
+                                <p>Euclidean distance compares your flower with dataset samples.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">03</div>
+                            <div>
+                                <strong>Get your prediction</strong>
+                                <p>The five nearest samples vote for the final species.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <footer class="footer">
+        Built with <strong>Python · Flask · NumPy</strong>
+        &nbsp;|&nbsp; Manual K-Nearest Neighbors
+    </footer>
+</body>
+</html>
